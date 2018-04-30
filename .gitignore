@@ -57,3 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
+# beer-server
+.DS_Store
+db.sqlite3
