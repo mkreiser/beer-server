@@ -2,7 +2,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 from rest_framework import filters, generics
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from beerApp.models import Beer
@@ -34,16 +34,16 @@ class BeerGET(generics.RetrieveAPIView):
   serializer_class = BeerSerializer
 
 class BeerPOST(generics.CreateAPIView):
-  permission_classes = (IsAdminUser, )
+  permission_classes = (IsAuthenticated, )
   queryset = Beer.objects.all()
   serializer_class = BeerSerializer
 
 class BeerPUT(generics.RetrieveUpdateAPIView):
-  permission_classes = (IsAdminUser, )
+  permission_classes = (IsAuthenticated, )
   queryset = Beer.objects.all()
   serializer_class = BeerSerializer
 
 class BeerDELETE(generics.DestroyAPIView):
-  permission_classes = (IsAdminUser, )
+  permission_classes = (IsAuthenticated, )
   queryset = Beer.objects.all()
   serializer_class = BeerSerializer
