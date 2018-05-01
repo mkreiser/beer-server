@@ -1,4 +1,5 @@
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import F
 
 from rest_framework import filters, generics
 from rest_framework.decorators import api_view, permission_classes
@@ -38,10 +39,25 @@ class BeerPOST(generics.CreateAPIView):
   queryset = Beer.objects.all()
   serializer_class = BeerSerializer
 
+  def perform_create(self, serializer):
+    Beer.objects.filter(ranking__gte=self.request.data['ranking']).update(ranking=F('ranking') + 1)
+    serializer.save()
+
 class BeerPUT(generics.RetrieveUpdateAPIView):
   permission_classes = (IsAuthenticated, )
   queryset = Beer.objects.all()
   serializer_class = BeerSerializer
+
+  def perform_update(self, serializer):
+    old_ranking = int(Beer.objects.get(id=serializer.instance.id).ranking)
+    new_ranking = int(self.request.data['ranking'])
+    # Beer is movin on up in the world
+    if (old_ranking > new_ranking):
+      Beer.objects.filter(ranking__range=(new_ranking, old_ranking - 1)).update(ranking=F('ranking') + 1)
+    # Beer is being ranked shittier
+    elif (old_ranking < new_ranking):
+      Beer.objects.filter(ranking__range=(old_ranking + 1, new_ranking)).update(ranking=F('ranking') - 1)
+    serializer.save()
 
 class BeerDELETE(generics.DestroyAPIView):
   permission_classes = (IsAuthenticated, )
