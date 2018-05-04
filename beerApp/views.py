@@ -24,7 +24,7 @@ def api_root(request, format=None):
 # MEET SERIALIZERS
 class BeerGETAll(generics.ListAPIView):
   permission_classes = (AllowAny, )
-  queryset = Beer.objects.all()
+  queryset = Beer.objects.all().order_by('ranking')
   serializer_class = BeerSerializer
   filter_backends = (filters.SearchFilter,)
   search_fields = ['name']
